@@ -1,0 +1,136 @@
+<template>
+  <div>
+    <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
+    <!-- Filter Area -->
+    <el-form id="filter-form" ref="form" :model="form" label-width="80px" size="mini">
+      <el-form-item label="恒星类型">
+        <el-select v-model="filter_form.star" placeholder="">
+          <el-option label="标准恒星" value="star"></el-option>
+          <el-option label="中子星" value="neutron"></el-option>
+          <el-option label="白矮星" value="white_dwarf"></el-option>
+          <el-option label="黑洞" value="black_hole"></el-option>
+          <el-option label="巨星" value="giant"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="初始星系">
+        <el-checkbox-group v-model="filter_form.planets">
+          <el-checkbox label="潮汐锁定（卫星）" name="type"></el-checkbox>
+          <el-checkbox label="潮汐锁定（永昼永夜）" name="type"></el-checkbox>
+          <el-checkbox label="横躺自转（卫星）" name="type"></el-checkbox>
+          <el-checkbox label="横躺自转（永昼永夜）" name="type"></el-checkbox>
+          <el-checkbox label="冰巨星" name="type"></el-checkbox>
+          <el-checkbox label="气态巨星" name="type"></el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="珍奇产出">
+        <el-checkbox-group v-model="filter_form.rare_resources">
+          <el-checkbox label="单极磁石" name="type"></el-checkbox>
+          <el-checkbox label="可燃冰" name="type"></el-checkbox>
+          <el-checkbox label="光栅石" name="type"></el-checkbox>
+          <el-checkbox label="有机晶体" name="type"></el-checkbox>
+          <el-checkbox label="分形硅石" name="type"></el-checkbox>
+          <el-checkbox label="金伯利矿石" name="type"></el-checkbox>
+          <el-checkbox label="刺笋结晶" name="type"></el-checkbox>
+          <el-checkbox label="重氢" name="type"></el-checkbox>
+          <el-checkbox label="原油" name="type"></el-checkbox>
+          <el-checkbox label="硫酸" name="type"></el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <!-- <el-form-item label="包含硬飞">
+        <el-switch v-model="form.needTrans"></el-switch>
+      </el-form-item> -->
+    </el-form>
+    <el-divider></el-divider>
+    <el-row type="flex" justify="start">
+      <el-button @click="onReset" icon="el-icon-refresh-left" style="margin-left: 20px">重置</el-button>
+      <el-button type="primary" @click="onSubmit" icon="el-icon-search" style="margin-left: 10px; width: 150px">筛选</el-button>
+      <el-select v-model="this.star" style="width: 40px">
+        <el-option label="热度" value="popular"></el-option>
+        <el-option label="光能利用率" value="light_effic"></el-option>
+        <el-option label="珍奇数量" value="rare_num"></el-option>
+        <el-option label="矿产储量" value="ore_deposit"></el-option>
+      </el-select>
+      <el-button type="success" icon="el-icon-circle-plus-outline" @click="onAdd" style="margin-left: 50%">添加星系种子</el-button>
+    </el-row>
+    <el-divider></el-divider>
+    <!-- PreArea -->
+    <el-tooltip effect="dark" placement="right"
+                  v-for="seed in seeds"
+                  v-bind:key="seed.id"
+      >
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">{{seed.star}}</p>
+        <p slot="content" style="font-size: 13px;margin-bottom: 6px">
+          <span>{{seed.id}}</span> /
+          <span>{{seed.planet_type}}</span> /
+        </p>
+        <p slot="content" style="width: 300px" class="abstract">{{seed.abs}}</p>
+        <el-card style="width: 135px;margin-bottom: 20px;height: 233px;float: left;margin-right: 15px" class="seed"
+                  bodyStyle="padding:10px" shadow="hover">
+          <div class="cover">
+            <img :src="require('@/assets/icons/main_star/' + seed.star + '.png')" alt="封面">
+          </div>
+          <div class="info">
+            <div class="title">
+              <a href="">{{seed.star_name}}</a>
+            </div>
+            <i class="el-icon-star-off" @click="giveStar(seed.id)"></i>
+          </div>
+          <div class="author">{{seed.id}}</div>
+        </el-card>
+      </el-tooltip>
+      <EditForm @onSubmit="loadSeeds()"></EditForm>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'SeedsIndex',
+  // components: {ProductArea},
+  data () {
+    return {
+      seeds: [],
+      filter_form: {
+        star: '',
+        planets: [],
+        rare_resources: []
+        // need_trans: true
+      },
+      sort_type: ''
+    }
+  },
+  mounted: function () {
+  },
+  methods: {
+    loadSeeds () {
+      this.$axios
+        .get('http://localhost:8443/api/seeds')
+        .then(resp => {
+          if (resp && resp.status === 200) {
+            this.seeds = resp.data
+          }
+        })
+    },
+    onSubmit () {
+      console.log('submit!')
+    },
+    onReset () {
+      this.filter_form = {
+        star: '',
+        planets: [],
+        rare_resources: []
+        // need_trans: true
+      }
+    }
+
+  }
+}
+</script>
+
+<style scoped>
+  #filter-form {
+    text-align: left;
+    margin: 10px;
+  }
+
+</style>

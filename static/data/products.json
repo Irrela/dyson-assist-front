@@ -1,0 +1,14 @@
+[
+  {
+    "name_en": "iron_ore",
+    "name_cn": "铁矿",
+    "id": "1",
+    "time_consuming": "1"
+  },
+  {
+    "name_en": "copper_ore",
+    "name_cn": "铜矿",
+    "id": "2",
+    "time_consuming": "1"
+  }
+]
