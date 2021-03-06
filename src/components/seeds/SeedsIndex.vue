@@ -1,8 +1,7 @@
 <template>
   <div>
-    <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
     <!-- Filter Area -->
-    <el-form id="filter-form" ref="form" :model="form" label-width="80px" size="mini">
+    <el-form id="filter_form" ref="form" :model="filter_form" label-width="80px" size="mini">
       <el-form-item label="恒星类型">
         <el-select v-model="filter_form.star" placeholder="">
           <el-option label="标准恒星" value="star"></el-option>
@@ -50,7 +49,8 @@
         <el-option label="珍奇数量" value="rare_num"></el-option>
         <el-option label="矿产储量" value="ore_deposit"></el-option>
       </el-select>
-      <el-button type="success" icon="el-icon-circle-plus-outline" @click="onAdd" style="margin-left: 50%">添加星系种子</el-button>
+
+      <EditForm @onSubmit="loadSeeds()" style="margin-left: 20%"></EditForm>
     </el-row>
     <el-divider></el-divider>
     <!-- PreArea -->
@@ -58,16 +58,18 @@
                   v-for="seed in seeds"
                   v-bind:key="seed.id"
       >
-        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">{{seed.star}}</p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">{{seed.seed_id}}</p>
         <p slot="content" style="font-size: 13px;margin-bottom: 6px">
-          <span>{{seed.id}}</span> /
-          <span>{{seed.planet_type}}</span> /
+          <span>{{seed.star_name}}</span> /
+          <span>{{seed.star_type}}</span> /
         </p>
-        <p slot="content" style="width: 300px" class="abstract">{{seed.abs}}</p>
+        <p slot="content" style="width: 300px" class="abstract">{{seed.light_effic}}</p>
+        <p slot="content" style="width: 300px" class="abstract">{{seed.planets}}</p>
+        <p slot="content" style="width: 300px" class="abstract">{{seed.rare_resources}}</p>
         <el-card style="width: 135px;margin-bottom: 20px;height: 233px;float: left;margin-right: 15px" class="seed"
                   bodyStyle="padding:10px" shadow="hover">
           <div class="cover">
-            <img :src="require('@/assets/icons/main_star/' + seed.star + '.png')" alt="封面">
+            <img :src="require('@/assets/icons/main_star/' + seed.star_type + '.png')" alt="封面">
           </div>
           <div class="info">
             <div class="title">
@@ -78,15 +80,15 @@
           <div class="author">{{seed.id}}</div>
         </el-card>
       </el-tooltip>
-      <EditForm @onSubmit="loadSeeds()"></EditForm>
   </div>
 </template>
 
 <script>
+import EditForm from './EditForm'
 
 export default {
   name: 'SeedsIndex',
-  // components: {ProductArea},
+  components: {EditForm},
   data () {
     return {
       seeds: [],
@@ -94,7 +96,6 @@ export default {
         star: '',
         planets: [],
         rare_resources: []
-        // need_trans: true
       },
       sort_type: ''
     }
@@ -112,23 +113,21 @@ export default {
         })
     },
     onSubmit () {
-      console.log('submit!')
+      console.log(this.filter_form)
     },
     onReset () {
       this.filter_form = {
         star: '',
         planets: [],
         rare_resources: []
-        // need_trans: true
       }
     }
-
   }
 }
 </script>
 
 <style scoped>
-  #filter-form {
+  #filter_form {
     text-align: left;
     margin: 10px;
   }
