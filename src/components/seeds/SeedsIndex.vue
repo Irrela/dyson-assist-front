@@ -3,7 +3,7 @@
     <!-- Filter Area -->
     <el-form id="filter_form" ref="form" :model="filter_form" label-width="80px" size="mini">
       <el-form-item label="恒星类型">
-        <el-select v-model="filter_form.star" placeholder="">
+        <el-select v-model="filter_form.star_type" placeholder="">
           <el-option label="标准恒星" value="star"></el-option>
           <el-option label="中子星" value="neutron"></el-option>
           <el-option label="白矮星" value="white_dwarf"></el-option>
@@ -43,7 +43,7 @@
     <el-row type="flex" justify="start">
       <el-button @click="onReset" icon="el-icon-refresh-left" style="margin-left: 20px">重置</el-button>
       <el-button type="primary" @click="onSubmit" icon="el-icon-search" style="margin-left: 10px; width: 150px">筛选</el-button>
-      <el-select v-model="this.star" style="width: 40px">
+      <el-select v-model="this.sort_type" style="width: 40px">
         <el-option label="热度" value="popular"></el-option>
         <el-option label="光能利用率" value="light_effic"></el-option>
         <el-option label="珍奇数量" value="rare_num"></el-option>
@@ -78,15 +78,15 @@
         >
           {{resource}}
         </p>
-        <el-card style="width: 135px;margin-bottom: 20px;height: 180px; float: left; margin-right: 15px"
+        <el-card style="width: 135px;margin-bottom: 20px;height: 180px; float: left"
                   bodyStyle="padding:10px" shadow="hover">
           <div class="cover">
             <img :src="require('@/assets/icons/main_star/' + seed.starType + '.png')" alt="封面">
           </div>
           <div class="title">
             <a>{{seed.starName}}</a>
-            </br>
-            <a>{{seed.seedId}}</a>
+            <br>
+            <a>ID : {{seed.seedId}}</a>
           </div>
           <div>
             <i class="el-icon-star-off" @click="giveStar(seed.id)"></i>
@@ -107,7 +107,7 @@ export default {
     return {
       seeds: [],
       filter_form: {
-        star: '',
+        star_type: '',
         planets: [],
         rare_resources: []
       },
@@ -131,10 +131,21 @@ export default {
     },
     onSubmit () {
       console.log(this.filter_form)
+      this.$axios
+        .post('http://localhost:8443/api/filterSeeds', {
+          starType: this.filter_form.star_type,
+          planets: this.filter_form.planets,
+          rareResources: this.filter_form.rare_resources
+        })
+        .then(resp => {
+          if (resp && resp.status === 200) {
+            this.seeds = resp.data
+          }
+        })
     },
     onReset () {
       this.filter_form = {
-        star: '',
+        star_type: '',
         planets: [],
         rare_resources: []
       }
@@ -149,18 +160,20 @@ export default {
     margin: 10px;
   }
   .cover {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 7px;
+    width: 85px;
+    height: 85px;
+    margin: 0 auto;
     overflow: hidden;
     cursor: pointer;
+
   }
   img {
-    width: 95px;
-    height: 95px;
+    width: 75px;
+    height: 75px;
   }
   .title {
-    font-size: 14px;
+    font-size: 15px;
+    font-style: italic;
     text-align: left;
   }
   .author {
@@ -176,5 +189,6 @@ export default {
   }
   i {
     margin-top: 0px;
+    float: left;
   }
 </style>
