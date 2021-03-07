@@ -6,10 +6,10 @@
       title="星系信息"
       :visible.sync="dialogFormVisible">
       <el-form v-model="form" style="text-align: left" ref="dataForm">
-        <el-form-item label="种子序号" :label-width="formLabelWidth" prop="title">
+        <el-form-item label="种子序号" :label-width="formLabelWidth">
           <el-input v-model="form.seed_id" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="恒星类型" :label-width="formLabelWidth" prop="title">
+        <el-form-item label="恒星类型" :label-width="formLabelWidth">
           <el-select value-key="id" v-model="form.star_type" placeholder="请选择分类">
             <el-option label="标准恒星" value="star"></el-option>
             <el-option label="中子星" value="neutron"></el-option>
@@ -18,10 +18,10 @@
             <el-option label="巨星" value="giant"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="恒星名称" :label-width="formLabelWidth" prop="author">
+        <el-form-item label="恒星名称" :label-width="formLabelWidth">
           <el-input v-model="form.star_name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="星系特征" :label-width="formLabelWidth" prop="date">
+        <el-form-item label="星系特征" :label-width="formLabelWidth">
           <el-checkbox-group v-model="form.planets">
             <el-checkbox label="潮汐锁定（卫星）" name="type"></el-checkbox>
             <el-checkbox label="潮汐锁定（永昼永夜）" name="type"></el-checkbox>
@@ -31,7 +31,7 @@
             <el-checkbox label="气态巨星" name="type"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="光能效率" :label-width="formLabelWidth" prop="title">
+        <el-form-item label="光能效率" :label-width="formLabelWidth">
           <el-input v-model="form.light_effic" autocomplete="off" placeholder="填写星系内最大值(无需%), 例如: 120"></el-input>
           <el-switch
             v-model="form.is_light_eternal"
@@ -39,7 +39,7 @@
             active-text="该行星永昼永夜">
           </el-switch>
         </el-form-item>
-        <el-form-item label="珍奇类型" :label-width="formLabelWidth" prop="press">
+        <el-form-item label="珍奇类型" :label-width="formLabelWidth">
           <el-checkbox-group v-model="form.rare_resources">
             <el-checkbox label="单极磁石" name="type"></el-checkbox>
             <el-checkbox label="可燃冰" name="type"></el-checkbox>
@@ -52,10 +52,6 @@
             <el-checkbox label="原油" name="type"></el-checkbox>
             <el-checkbox label="硫酸" name="type"></el-checkbox>
           </el-checkbox-group>
-        </el-form-item>
-        <!-- 自动生成书籍_id -->
-        <el-form-item prop="id" style="height: 0">
-          <el-input type="hidden" v-model="form.id" autocomplete="on"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -74,8 +70,6 @@ export default {
     return {
       dialogFormVisible: false,
       form: {
-        // 不设置id，让database自增
-        // id: '',
         seed_id: '',
         star_type: '',
         star_name: '',
@@ -90,7 +84,6 @@ export default {
   methods: {
     clear () {
       this.form = {
-        // id: '',
         seed_id: '',
         star_type: '',
         star_name: '',
@@ -103,12 +96,14 @@ export default {
     onSubmit () {
       console.log(this.form)
       this.$axios
-        .post('/seeds', {
-          seed_id: this.form.seed_id,
-          star_type: this.form.star_type,
-          star_name: this.form.star_name,
+        .post('http://localhost:8443/api/seeds', {
+          seedId: this.form.seed_id,
+          starType: this.form.star_type,
+          starName: this.form.star_name,
           planets: this.form.planets,
-          rare_resources: this.form.rare_resources
+          lightEffic: this.form.light_effic,
+          isLightEternal: this.form.is_light_eternal,
+          rareResources: this.form.rare_resources
         })
         .then(resp => {
           if (resp && resp.status === 200) {

@@ -54,30 +54,44 @@
     </el-row>
     <el-divider></el-divider>
     <!-- PreArea -->
-    <el-tooltip effect="dark" placement="right"
+    <el-tooltip effect="dark" placement="right" style="margin-left: 20px"
                   v-for="seed in seeds"
                   v-bind:key="seed.id"
       >
-        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">{{seed.seed_id}}</p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">ID : {{seed.id}}</p>
         <p slot="content" style="font-size: 13px;margin-bottom: 6px">
-          <span>{{seed.star_name}}</span> /
-          <span>{{seed.star_type}}</span> /
+          <span>{{seed.starName}}</span>  /
+          <span>{{map.get(seed.starType)}}</span>
         </p>
-        <p slot="content" style="width: 300px" class="abstract">{{seed.light_effic}}</p>
-        <p slot="content" style="width: 300px" class="abstract">{{seed.planets}}</p>
-        <p slot="content" style="width: 300px" class="abstract">{{seed.rare_resources}}</p>
-        <el-card style="width: 135px;margin-bottom: 20px;height: 233px;float: left;margin-right: 15px" class="seed"
+        <p slot="content" style="width: 300px" class="abstract">光能利用率 : {{seed.lightEffic}}%</p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">———————————————————————</p>
+        <p slot="content" style="width: 300px; text-shadow: 0 0 10px white,0 0 20px blue,0 0 30px white,0 0 40px blue;" class="abstract"
+            v-for="planet in seed.planets"
+            v-bind:key="planet.id"
+        >
+          {{planet}}
+        </p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">———————————————————————</p>
+        <p slot="content" style="width: 300px; text-shadow: 0 0 10px white,0 0 20px orange,0 0 30px white,0 0 40px #E6A23C;" class="abstract"
+            v-for="resource in seed.rareResources"
+            v-bind:key="resource.id"
+        >
+          {{resource}}
+        </p>
+        <el-card style="width: 135px;margin-bottom: 20px;height: 180px; float: left; margin-right: 15px"
                   bodyStyle="padding:10px" shadow="hover">
           <div class="cover">
-            <img :src="require('@/assets/icons/main_star/' + seed.star_type + '.png')" alt="封面">
+            <img :src="require('@/assets/icons/main_star/' + seed.starType + '.png')" alt="封面">
           </div>
-          <div class="info">
-            <div class="title">
-              <a href="">{{seed.star_name}}</a>
-            </div>
+          <div class="title">
+            <a>{{seed.starName}}</a>
+            </br>
+            <a>{{seed.seedId}}</a>
+          </div>
+          <div>
             <i class="el-icon-star-off" @click="giveStar(seed.id)"></i>
+            <a></a>
           </div>
-          <div class="author">{{seed.id}}</div>
         </el-card>
       </el-tooltip>
   </div>
@@ -97,10 +111,12 @@ export default {
         planets: [],
         rare_resources: []
       },
-      sort_type: ''
+      sort_type: '',
+      map: new Map([['star', '标准恒星'], ['black_hole', '黑洞'], ['giant', '巨星'], ['neutron', '中子星'], ['white_dwarf', '白矮星']])
     }
   },
   mounted: function () {
+    this.loadSeeds()
   },
   methods: {
     loadSeeds () {
@@ -109,6 +125,7 @@ export default {
         .then(resp => {
           if (resp && resp.status === 200) {
             this.seeds = resp.data
+            console.log(this.seeds[0])
           }
         })
     },
@@ -131,5 +148,33 @@ export default {
     text-align: left;
     margin: 10px;
   }
-
+  .cover {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 7px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  img {
+    width: 95px;
+    height: 95px;
+  }
+  .title {
+    font-size: 14px;
+    text-align: left;
+  }
+  .author {
+    color: #333;
+    width: 102px;
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-align: left;
+  }
+  .abstract {
+    display: block;
+    line-height: 17px;
+  }
+  i {
+    margin-top: 0px;
+  }
 </style>
