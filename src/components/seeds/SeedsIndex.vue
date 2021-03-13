@@ -38,31 +38,38 @@
       <!-- <el-form-item label="包含硬飞">
         <el-switch v-model="form.needTrans"></el-switch>
       </el-form-item> -->
-    </el-form>
-    <el-divider></el-divider>
-    <el-row type="flex" justify="start">
-      <el-button @click="onReset" icon="el-icon-refresh-left" style="margin-left: 20px">重置</el-button>
-      <el-button type="primary" @click="onSubmit" icon="el-icon-search" style="margin-left: 10px; width: 150px">筛选</el-button>
-      <el-select v-model="this.sort_type" style="width: 40px">
-        <el-option label="热度" value="popular"></el-option>
-        <el-option label="光能利用率" value="light_effic"></el-option>
-        <el-option label="珍奇数量" value="rare_num"></el-option>
-        <el-option label="矿产储量" value="ore_deposit"></el-option>
-      </el-select>
 
-      <EditForm @onSubmit="loadSeeds()" style="margin-left: 20%"></EditForm>
-    </el-row>
+      <el-divider></el-divider>
+      <el-row type="flex" justify="start">
+        <el-button @click="onReset" icon="el-icon-refresh-left" style="margin-left: 20px">重置</el-button>
+        <el-button type="primary" @click="onSubmit" icon="el-icon-search" style="margin-left: 10px; width: 150px">筛选</el-button>
+        <el-select v-model="filter_form.sort_type" placeholder="排序方式" style="margin-left: 25px; width: 120px">
+          <el-option label="光能利用率" value="light_effic"></el-option>
+          <el-option label="风能利用率" value="wind_effic"></el-option>
+          <el-option label="珍奇数量" value="rare_num"></el-option>
+        </el-select>
+        <el-switch style="margin-left: 10px; margin-top: 10px"
+          v-model="filter_form.asc"
+          active-text="降序"
+          active-value= -1
+          inactive-text="升序"
+          inactive-value= 1
+          >
+        </el-switch>
+
+        <EditForm @onSubmit="loadSeeds()" style="margin-left: 20%"></EditForm>
+      </el-row>
+    </el-form>
     <el-divider></el-divider>
     <!-- PreArea -->
     <el-tooltip effect="dark" placement="right" style="margin-left: 20px"
                   v-for="seed in seeds"
                   v-bind:key="seed.id"
       >
-        <p slot="content" style="font-size: 14px;margin-bottom: 6px;">ID : {{seed.id}}</p>
-        <p slot="content" style="font-size: 13px;margin-bottom: 6px">
-          <span>{{seed.starName}}</span>  /
-          <span>{{map.get(seed.starType)}}</span>
-        </p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;"> {{seed.starName}} </p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;"> {{map.get(seed.starType)}} </p>
+        <p slot="content" style="font-size: 14px;margin-bottom: 6px;"> ID: {{seed.id}} </p>
+        <p slot="content" style="width: 300px" class="abstract">风能利用率 : {{seed.windEffic}}%</p>
         <p slot="content" style="width: 300px" class="abstract">光能利用率 : {{seed.lightEffic}}%</p>
         <p slot="content" style="font-size: 14px;margin-bottom: 6px;">———————————————————————</p>
         <p slot="content" style="width: 300px; text-shadow: 0 0 10px white,0 0 20px blue,0 0 30px white,0 0 40px blue;" class="abstract"
@@ -109,9 +116,10 @@ export default {
       filter_form: {
         star_type: '',
         planets: [],
-        rare_resources: []
+        rare_resources: [],
+        sort_type: 'light_effic',
+        asc: 1
       },
-      sort_type: '',
       map: new Map([['star', '标准恒星'], ['black_hole', '黑洞'], ['giant', '巨星'], ['neutron', '中子星'], ['white_dwarf', '白矮星']])
     }
   },
@@ -135,7 +143,9 @@ export default {
         .post('http://localhost:8443/api/filterSeeds', {
           starType: this.filter_form.star_type,
           planets: this.filter_form.planets,
-          rareResources: this.filter_form.rare_resources
+          rareResources: this.filter_form.rare_resources,
+          sortType: this.filter_form.sort_type,
+          ascending: this.filter_form.asc
         })
         .then(resp => {
           if (resp && resp.status === 200) {

@@ -3,7 +3,7 @@
     <el-button type="success" icon="el-icon-circle-plus-outline" @click="dialogFormVisible = true">添加星系种子</el-button>
 
     <el-dialog
-      title="星系信息"
+      title="填写种子信息"
       :visible.sync="dialogFormVisible">
       <el-form v-model="form" style="text-align: left" ref="dataForm">
         <el-form-item label="种子序号" :label-width="formLabelWidth">
@@ -30,6 +30,9 @@
             <el-checkbox label="冰巨星" name="type"></el-checkbox>
             <el-checkbox label="气态巨星" name="type"></el-checkbox>
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="风能效率" :label-width="formLabelWidth">
+          <el-input v-model="form.wind_effic" autocomplete="off" placeholder="填写星系内最大值(无需%), 例如: 120"></el-input>
         </el-form-item>
         <el-form-item label="光能效率" :label-width="formLabelWidth">
           <el-input v-model="form.light_effic" autocomplete="off" placeholder="填写星系内最大值(无需%), 例如: 120"></el-input>
@@ -74,6 +77,7 @@ export default {
         star_type: '',
         star_name: '',
         planets: [],
+        wind_effic: '',
         light_effic: '',
         is_light_eternal: false,
         rare_resources: []
@@ -101,6 +105,7 @@ export default {
           starType: this.form.star_type,
           starName: this.form.star_name,
           planets: this.form.planets,
+          windEffic: this.form.wind_effic,
           lightEffic: this.form.light_effic,
           isLightEternal: this.form.is_light_eternal,
           rareResources: this.form.rare_resources
